@@ -1,0 +1,177 @@
+[
+  {
+    "id": "Q01",
+    "question": "What is the minimum attendance requirement for regular students?",
+    "expected_state": "ANSWERABLE",
+    "expected_evidence_ids": [],
+    "notes": "Clear answer in regulations.md Section 3.1 - 75% attendance"
+  },
+  {
+    "id": "Q02",
+    "question": "What happens if a student's attendance falls below 75%?",
+    "expected_state": "ANSWERABLE",
+    "expected_evidence_ids": [],
+    "notes": "regulations.md Section 3.3 - debarred from end-semester exam"
+  },
+  {
+    "id": "Q03",
+    "question": "What is the tuition fee for a semester and when is it due?",
+    "expected_state": "ANSWERABLE",
+    "expected_evidence_ids": [],
+    "notes": "fee_schedule.md Section 1.1 fee table - Rs 85,000, due August 10"
+  },
+  {
+    "id": "Q04",
+    "question": "What CGPA is required for the Chancellor's Gold scholarship?",
+    "expected_state": "ANSWERABLE",
+    "expected_evidence_ids": [],
+    "notes": "fee_schedule.md Section 4.1 - CGPA 9.5 and above"
+  },
+  {
+    "id": "Q05",
+    "question": "How long does a student have to appeal a grade?",
+    "expected_state": "ANSWERABLE",
+    "expected_evidence_ids": [],
+    "notes": "regulations.md Section 5.3 - 15 calendar days"
+  },
+  {
+    "id": "Q06",
+    "question": "What is the maximum duration for completing an undergraduate degree?",
+    "expected_state": "ANSWERABLE",
+    "expected_evidence_ids": [],
+    "notes": "regulations.md Section 9.3 - 8 years"
+  },
+  {
+    "id": "Q07",
+    "question": "What are the hostel gate closing timings on weekdays?",
+    "expected_state": "ANSWERABLE",
+    "expected_evidence_ids": [],
+    "notes": "hostel_regulations.md Section 2.1 - 10:00 PM weekdays"
+  },
+  {
+    "id": "Q08",
+    "question": "What is the penalty for a first offense of academic dishonesty?",
+    "expected_state": "ANSWERABLE",
+    "expected_evidence_ids": [],
+    "notes": "regulations.md Section 7.2 - zero marks, written warning, integrity workshop"
+  },
+  {
+    "id": "Q09",
+    "question": "What is the refund percentage if a student withdraws within the first 2 weeks?",
+    "expected_state": "ANSWERABLE",
+    "expected_evidence_ids": [],
+    "notes": "fee_schedule.md Section 3.1 - 75% of tuition"
+  },
+  {
+    "id": "Q10",
+    "question": "What is the maximum grade achievable through a supplementary examination?",
+    "expected_state": "ANSWERABLE",
+    "expected_evidence_ids": [],
+    "notes": "academic_regulations.pdf - Section S5 - maximum grade B (6 grade points)"
+  },
+  {
+    "id": "Q11",
+    "question": "Can the Academic Committee waive the 60% minimum attendance requirement for a student with a severe medical condition?",
+    "expected_state": "CONTRADICTORY",
+    "expected_evidence_ids": [],
+    "notes": "CONTRA-001: medical_exemptions.md says 60% cannot be waived under any circumstances; regulations.md Section 11.2 says Academic Committee can waive any academic requirement"
+  },
+  {
+    "id": "Q12",
+    "question": "Can a student with an approved medical exemption who has 70% attendance retain their merit scholarship?",
+    "expected_state": "CONTRADICTORY",
+    "expected_evidence_ids": [],
+    "notes": "CONTRA-002: fee_schedule.md requires 85% attendance for scholarships; medical_exemptions.md reduces minimum to 60% but doesn't address scholarship eligibility"
+  },
+  {
+    "id": "Q13",
+    "question": "If a student appeals a registration suspension due to non-payment of fees, can they continue attending classes while the appeal is pending?",
+    "expected_state": "CONTRADICTORY",
+    "expected_evidence_ids": [],
+    "notes": "CONTRA-003: fee_schedule.md says suspended students may not attend classes; regulations.md Section 12.4 says enrollment shall not be altered during appeal"
+  },
+  {
+    "id": "Q14",
+    "question": "Is there a conflict between the medical exemption attendance policy and the Academic Committee's waiver authority?",
+    "expected_state": "CONTRADICTORY",
+    "expected_evidence_ids": [],
+    "notes": "Direct question about CONTRA-001"
+  },
+  {
+    "id": "Q15",
+    "question": "Does a medical attendance exemption affect scholarship eligibility?",
+    "expected_state": "CONTRADICTORY",
+    "expected_evidence_ids": [],
+    "notes": "Tests CONTRA-002 - scholarship requires 85%, medical exemption allows 60%"
+  },
+  {
+    "id": "Q16",
+    "question": "What happens to a student's class attendance rights when their registration is suspended for non-payment but they file an appeal?",
+    "expected_state": "CONTRADICTORY",
+    "expected_evidence_ids": [],
+    "notes": "Tests CONTRA-003 from a different angle"
+  },
+  {
+    "id": "Q17",
+    "question": "What is the minimum attendance requirement for students on a medical exemption who also hold a scholarship?",
+    "expected_state": "CONTRADICTORY",
+    "expected_evidence_ids": [],
+    "notes": "Tests CONTRA-002 - conflicting requirements of 60% (medical) vs 85% (scholarship)"
+  },
+  {
+    "id": "Q18",
+    "question": "Can a student miss an exam because of a family wedding?",
+    "expected_state": "NOT_FOUND",
+    "expected_evidence_ids": [],
+    "notes": "Corpus only covers medical absence from exams (Section 4.4), not family events"
+  },
+  {
+    "id": "Q19",
+    "question": "Can students pay their tuition fees using cryptocurrency?",
+    "expected_state": "NOT_FOUND",
+    "expected_evidence_ids": [],
+    "notes": "fee_schedule.md lists payment methods (bank transfer, DD, UPI, card) but not cryptocurrency"
+  },
+  {
+    "id": "Q20",
+    "question": "Is there a dress code policy for students on campus?",
+    "expected_state": "NOT_FOUND",
+    "expected_evidence_ids": [],
+    "notes": "No dress code mentioned anywhere in the corpus"
+  },
+  {
+    "id": "Q21",
+    "question": "Can a student appeal a disciplinary decision through social media?",
+    "expected_state": "NOT_FOUND",
+    "expected_evidence_ids": [],
+    "notes": "Appeal process is through written formal channels (Section 12.2), social media not mentioned"
+  },
+  {
+    "id": "Q22",
+    "question": "Are students allowed to bring their personal vehicles and park on campus?",
+    "expected_state": "NOT_FOUND",
+    "expected_evidence_ids": [],
+    "notes": "No parking or vehicle policy in the corpus"
+  },
+  {
+    "id": "Q23",
+    "question": "What is the policy on students taking courses at other universities concurrently?",
+    "expected_state": "NOT_FOUND",
+    "expected_evidence_ids": [],
+    "notes": "Transfer credits are covered but concurrent enrollment at other universities is not addressed"
+  },
+  {
+    "id": "Q24",
+    "question": "Can a student request a change of major or transfer between programs?",
+    "expected_state": "NOT_FOUND",
+    "expected_evidence_ids": [],
+    "notes": "Academic dismissal mentions transfer recommendation but voluntary program change is not covered"
+  },
+  {
+    "id": "Q25",
+    "question": "Is there a policy on recording lectures by students?",
+    "expected_state": "NOT_FOUND",
+    "expected_evidence_ids": [],
+    "notes": "Disability services mention audio recording with faculty permission, but no general recording policy exists"
+  }
+]
