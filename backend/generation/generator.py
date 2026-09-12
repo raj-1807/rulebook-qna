@@ -34,7 +34,7 @@ class GroundedGenerator:
                 from openai import OpenAI
                 self.llm_client = OpenAI(api_key=api_key)
         except Exception as e:
-            print(f"⚠ LLM init failed for generator: {e}")
+            print(f"[WARN] LLM init failed for generator: {e}")
 
     def generate(self, question: str, state: QuestionState,
                  confidence: float, evidence: list[EvidenceItem],

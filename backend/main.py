@@ -34,9 +34,9 @@ async def lifespan(app: FastAPI):
         pipeline = QnAPipeline(retriever, classifier, generator)
         app_state["corpus_loaded"] = True
         app_state["chunks_count"] = len(chunks)
-        print(f"✓ Pipeline initialized with {len(chunks)} chunks")
+        print(f"[OK] Pipeline initialized with {len(chunks)} chunks")
     except Exception as e:
-        print(f"⚠ Pipeline initialization failed: {e}")
+        print(f"[WARN] Pipeline initialization failed: {e}")
         print("  Server running in degraded mode. POST /api/ask will return 503.")
 
     yield

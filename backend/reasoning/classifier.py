@@ -41,7 +41,7 @@ class StateClassifier:
                 from openai import OpenAI
                 self.llm_client = OpenAI(api_key=api_key)
         except Exception as e:
-            print(f"⚠ LLM init failed: {e}")
+            print(f"[WARN] LLM init failed: {e}")
 
     def classify(self, question: str, evidence: list[EvidenceItem]) -> dict:
         """
@@ -134,7 +134,7 @@ CONTRADICTION: NO"""
             response_text = self._call_llm(prompt)
             return self._parse_contradiction_response(response_text, evidence)
         except Exception as e:
-            print(f"⚠ LLM contradiction check failed: {e}")
+            print(f"[WARN] LLM contradiction check failed: {e}")
             return self._rule_based_contradiction_check(question, evidence)
 
     def _check_answerable(self, question: str, evidence: list[EvidenceItem]) -> bool:
@@ -164,7 +164,7 @@ Respond with EXACTLY one word: ANSWERABLE or NOT_FOUND"""
             response_text = self._call_llm(prompt)
             return "ANSWERABLE" in response_text.upper()
         except Exception as e:
-            print(f"⚠ LLM answerable check failed: {e}")
+            print(f"[WARN] LLM answerable check failed: {e}")
             return evidence[0].score >= 0.35
 
     def _call_llm(self, prompt: str) -> str:

@@ -57,9 +57,9 @@ class HybridRetriever:
             norms = np.linalg.norm(self.embeddings, axis=1, keepdims=True)
             norms[norms == 0] = 1  # avoid division by zero
             self.embeddings = self.embeddings / norms
-            print(f"✓ Embedded {len(texts)} chunks with {model_name}")
+            print(f"[OK] Embedded {len(texts)} chunks with {model_name}")
         except Exception as e:
-            print(f"⚠ Embedding initialization failed: {e}")
+            print(f"[WARN] Embedding initialization failed: {e}")
             self.embeddings = None
 
     def retrieve(self, question: str) -> list[EvidenceItem]:

@@ -104,13 +104,13 @@ class CorpusIngestor:
         try:
             from pypdf import PdfReader
         except ImportError:
-            print(f"⚠ pypdf not installed, skipping {filename}")
+            print(f"[WARN] pypdf not installed, skipping {filename}")
             return
 
         try:
             reader = PdfReader(filepath)
         except Exception as e:
-            print(f"⚠ Failed to open PDF {filename}: {e}")
+            print(f"[WARN] Failed to open PDF {filename}: {e}")
             return
 
         chunk_counter = 0

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
 
 const API_BASE = 'http://localhost:8000'
@@ -6,28 +6,28 @@ const API_BASE = 'http://localhost:8000'
 const STATE_CONFIG = {
   ANSWERABLE: {
     label: 'ANSWERABLE',
-    icon: '✓',
+    icon: '\u2713',
     className: 'state-answerable',
     description: 'The regulations contain sufficient evidence to answer this question.',
   },
   NOT_FOUND: {
     label: 'NOT FOUND',
-    icon: '∅',
+    icon: '\u2205',
     className: 'state-not-found',
-    description: 'The regulations do not contain specific information to answer this question.',
+    description: 'The regulations do not contain enough information to answer this question.',
   },
   CONTRADICTORY: {
     label: 'CONTRADICTORY',
-    icon: '⚡',
+    icon: '\u26A1',
     className: 'state-contradictory',
     description: 'Multiple rules in the regulations conflict on this question.',
   },
 }
 
 const DEMO_QUESTIONS = [
-  'What is the minimum attendance requirement for regular students?',
-  'Can a student miss an exam because of a family wedding?',
-  'Can the Academic Committee waive the 60% minimum attendance requirement for a student with a severe medical condition?',
+  { text: 'What is the minimum attendance requirement for regular students?', tag: 'Answerable' },
+  { text: 'Can a student miss an exam because of a family wedding?', tag: 'Not Found' },
+  { text: 'Can the Academic Committee waive the 60% minimum attendance requirement for a student with a severe medical condition?', tag: 'Contradictory' },
 ]
 
 function App() {
@@ -35,6 +35,15 @@ function App() {
   const [response, setResponse] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark')
+  const [history, setHistory] = useState([])
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme)
+    localStorage.setItem('theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => setTheme(t => t === 'dark' ? 'light' : 'dark')
 
   const askQuestion = async (q) => {
     const queryText = q || question
@@ -58,8 +67,9 @@ function App() {
 
       const data = await res.json()
       setResponse(data)
+      setHistory(prev => [{ question: queryText, state: data.state, timestamp: new Date() }, ...prev.slice(0, 9)])
     } catch (err) {
-      setError(err.message || 'Failed to connect to the server')
+      setError(err.message || 'Failed to connect to the server. Is the backend running?')
     } finally {
       setLoading(false)
     }
@@ -77,190 +87,256 @@ function App() {
 
   return (
     <div className="app">
+      {/* Floating Theme Toggle */}
+      <button className="theme-toggle" onClick={toggleTheme} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
+        {theme === 'dark' ? (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+        ) : (
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        )}
+      </button>
+
+      {/* Hero Header */}
       <header className="header">
+        <div className="header-bg"></div>
         <div className="header-content">
-          <div className="logo">
-            <span className="logo-icon">📚</span>
-            <h1>Rulebook QnA</h1>
+          <div className="header-badge">Evidence-Grounded AI</div>
+          <h1 className="header-title">
+            Rulebook <span className="highlight">QnA</span>
+          </h1>
+          <p className="header-subtitle">
+            The Rulebook That Argues With Itself
+          </p>
+          <div className="header-pills">
+            <span className="pill pill-green">Answerable</span>
+            <span className="pill pill-amber">Not Found</span>
+            <span className="pill pill-red">Contradictory</span>
           </div>
-          <p className="tagline">Evidence-grounded university regulations Q&A with three-state reasoning</p>
         </div>
       </header>
 
       <main className="main">
-        <div className="query-section">
-          <form onSubmit={handleSubmit} className="query-form">
-            <div className="input-wrapper">
-              <input
-                type="text"
-                value={question}
-                onChange={(e) => setQuestion(e.target.value)}
-                placeholder="Ask a question about university regulations..."
-                className="query-input"
-                disabled={loading}
-              />
-              <button type="submit" className="ask-button" disabled={loading || !question.trim()}>
-                {loading ? (
-                  <span className="spinner"></span>
-                ) : (
-                  'Ask'
-                )}
-              </button>
+        {/* Search Section */}
+        <section className="search-section">
+          <form onSubmit={handleSubmit} className="search-form">
+            <div className="search-icon-wrapper">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
             </div>
+            <input
+              type="text"
+              value={question}
+              onChange={(e) => setQuestion(e.target.value)}
+              placeholder="Ask about university regulations..."
+              className="search-input"
+              disabled={loading}
+            />
+            <button type="submit" className="search-button" disabled={loading || !question.trim()}>
+              {loading ? <span className="btn-spinner"></span> : 'Search'}
+            </button>
           </form>
 
-          <div className="demo-section">
-            <span className="demo-label">Try:</span>
+          <div className="demo-chips">
+            <span className="demo-label">Quick questions:</span>
             {DEMO_QUESTIONS.map((q, i) => (
-              <button
-                key={i}
-                className="demo-button"
-                onClick={() => handleDemoClick(q)}
-                disabled={loading}
-              >
-                {q.length > 60 ? q.substring(0, 57) + '...' : q}
+              <button key={i} className={`demo-chip demo-chip-${q.tag.toLowerCase().replace(' ', '-')}`} onClick={() => handleDemoClick(q.text)} disabled={loading}>
+                <span className="chip-tag">{q.tag}</span>
+                <span className="chip-text">{q.text.length > 50 ? q.text.substring(0, 47) + '...' : q.text}</span>
               </button>
             ))}
           </div>
-        </div>
+        </section>
 
+        {/* Error */}
         {error && (
-          <div className="error-card">
-            <span className="error-icon">⚠</span>
-            <div>
-              <strong>Error</strong>
+          <div className="alert alert-error animate-in">
+            <div className="alert-icon">!</div>
+            <div className="alert-body">
+              <strong>Connection Error</strong>
               <p>{error}</p>
             </div>
+            <button className="alert-dismiss" onClick={() => setError(null)}>&times;</button>
           </div>
         )}
 
+        {/* Loading */}
         {loading && (
-          <div className="loading-card">
-            <div className="loading-animation">
-              <div className="pulse-ring"></div>
-              <span className="loading-icon">🔍</span>
+          <div className="loading-state animate-in">
+            <div className="loading-orb">
+              <div className="orb-ring orb-ring-1"></div>
+              <div className="orb-ring orb-ring-2"></div>
+              <div className="orb-ring orb-ring-3"></div>
+              <div className="orb-core">?</div>
             </div>
-            <p>Searching regulations and analyzing evidence...</p>
+            <div className="loading-steps">
+              <div className="step active">Retrieving evidence...</div>
+              <div className="step">Analyzing regulations...</div>
+              <div className="step">Generating grounded answer...</div>
+            </div>
           </div>
         )}
 
+        {/* Response */}
         {response && (
-          <div className="response-section">
-            <StateIndicator state={response.state} confidence={response.confidence} />
-
-            <div className="answer-card">
-              <h3>Answer</h3>
-              <div className="answer-text">{response.answer}</div>
+          <div className="response animate-in">
+            {/* State Banner */}
+            <div className={`state-banner ${STATE_CONFIG[response.state]?.className}`}>
+              <div className="banner-left">
+                <div className="banner-icon">{STATE_CONFIG[response.state]?.icon}</div>
+                <div>
+                  <div className="banner-label">{STATE_CONFIG[response.state]?.label}</div>
+                  <div className="banner-desc">{STATE_CONFIG[response.state]?.description}</div>
+                </div>
+              </div>
+              <div className="banner-confidence">
+                <svg width="36" height="36" viewBox="0 0 36 36">
+                  <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3" opacity="0.15"/>
+                  <circle cx="18" cy="18" r="15" fill="none" stroke="currentColor" strokeWidth="3"
+                    strokeDasharray={`${response.confidence * 94.25} 94.25`}
+                    strokeLinecap="round" transform="rotate(-90 18 18)"
+                    style={{transition: 'stroke-dasharray 0.8s ease'}}/>
+                </svg>
+                <span className="confidence-text">{(response.confidence * 100).toFixed(0)}%</span>
+              </div>
             </div>
 
+            {/* Answer */}
+            <div className="card answer-card">
+              <div className="card-header">
+                <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Answer</h3>
+              </div>
+              <div className="card-body">
+                <div className="answer-text">{response.answer}</div>
+              </div>
+            </div>
+
+            {/* Conflicts */}
             {response.state === 'CONTRADICTORY' && response.conflicts.length > 0 && (
-              <ConflictPanel conflicts={response.conflicts} />
+              <div className="card conflict-card">
+                <div className="card-header conflict-header">
+                  <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> Conflicting Rules Detected</h3>
+                </div>
+                <div className="card-body">
+                  {response.conflicts.map((conflict, i) => (
+                    <div key={i} className="conflict-block">
+                      <div className="conflict-versus">
+                        <div className="versus-rule versus-a">
+                          <div className="versus-badge">Rule A</div>
+                          <div className="versus-source">
+                            <strong>{conflict.rule_a.document}</strong>
+                            {conflict.rule_a.page && <span> &middot; Page {conflict.rule_a.page}</span>}
+                            <span> &middot; {conflict.rule_a.section}</span>
+                          </div>
+                          <blockquote>{conflict.rule_a.text}</blockquote>
+                        </div>
+
+                        <div className="versus-divider">
+                          <span>VS</span>
+                        </div>
+
+                        <div className="versus-rule versus-b">
+                          <div className="versus-badge">Rule B</div>
+                          <div className="versus-source">
+                            <strong>{conflict.rule_b.document}</strong>
+                            {conflict.rule_b.page && <span> &middot; Page {conflict.rule_b.page}</span>}
+                            <span> &middot; {conflict.rule_b.section}</span>
+                          </div>
+                          <blockquote>{conflict.rule_b.text}</blockquote>
+                        </div>
+                      </div>
+
+                      <div className="conflict-reason">
+                        <strong>Why this conflicts:</strong> {conflict.explanation}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
 
+            {/* Evidence */}
             {response.evidence.length > 0 && (
-              <EvidencePanel evidence={response.evidence} />
+              <div className="card evidence-card">
+                <div className="card-header">
+                  <h3><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Evidence ({response.evidence.length})</h3>
+                </div>
+                <div className="card-body">
+                  {response.evidence.map((ev, i) => (
+                    <div key={i} className="evidence-item">
+                      <div className="ev-top">
+                        <span className="ev-id">{ev.evidence_id}</span>
+                        <div className="ev-score-bar">
+                          <div className="ev-score-fill" style={{ width: `${ev.score * 100}%` }}></div>
+                        </div>
+                        <span className="ev-score-val">{(ev.score * 100).toFixed(0)}%</span>
+                      </div>
+                      <div className="ev-source">
+                        <span className="ev-tag ev-tag-doc">{ev.document}</span>
+                        {ev.page && <span className="ev-tag ev-tag-page">Page {ev.page}</span>}
+                        <span className="ev-tag ev-tag-section">{ev.section}</span>
+                      </div>
+                      <blockquote className="ev-text">{ev.text}</blockquote>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         )}
 
-        <div className="states-info">
-          <h3>Three-State Reasoning</h3>
-          <div className="states-grid">
-            {Object.entries(STATE_CONFIG).map(([key, config]) => (
-              <div key={key} className={`state-info-card ${config.className}`}>
-                <span className="state-info-icon">{config.icon}</span>
-                <strong>{config.label}</strong>
-                <p>{config.description}</p>
+        {/* How it Works - show only when no response */}
+        {!response && !loading && !error && (
+          <section className="how-it-works animate-in">
+            <h2>How It Works</h2>
+            <div className="steps-grid">
+              <div className="step-card">
+                <div className="step-num">1</div>
+                <h4>Ask a Question</h4>
+                <p>Type any question about university regulations, policies, fees, or procedures.</p>
               </div>
-            ))}
-          </div>
-        </div>
+              <div className="step-card">
+                <div className="step-num">2</div>
+                <h4>Hybrid Retrieval</h4>
+                <p>BM25 keyword search + semantic embeddings find the most relevant regulatory passages.</p>
+              </div>
+              <div className="step-card">
+                <div className="step-num">3</div>
+                <h4>State Classification</h4>
+                <p>The system determines if the question is answerable, not found, or contradictory.</p>
+              </div>
+              <div className="step-card">
+                <div className="step-num">4</div>
+                <h4>Grounded Answer</h4>
+                <p>Every answer is traced to exact source passages. No hallucination, no guessing.</p>
+              </div>
+            </div>
+
+            <div className="three-states">
+              <div className="ts-card ts-answerable">
+                <div className="ts-icon">{'\u2713'}</div>
+                <strong>ANSWERABLE</strong>
+                <p>Evidence found. Answer with citations.</p>
+              </div>
+              <div className="ts-card ts-not-found">
+                <div className="ts-icon">{'\u2205'}</div>
+                <strong>NOT FOUND</strong>
+                <p>No evidence. Refuses to guess.</p>
+              </div>
+              <div className="ts-card ts-contradictory">
+                <div className="ts-icon">{'\u26A1'}</div>
+                <strong>CONTRADICTORY</strong>
+                <p>Conflicting rules. Shows both sides.</p>
+              </div>
+            </div>
+          </section>
+        )}
       </main>
 
       <footer className="footer">
-        <p>Rulebook QnA — "The Rulebook That Argues With Itself"</p>
-        <p className="footer-sub">Every answer is grounded in evidence. When evidence is insufficient, we say so. When rules conflict, we show both sides.</p>
-      </footer>
-    </div>
-  )
-}
-
-function StateIndicator({ state, confidence }) {
-  const config = STATE_CONFIG[state] || STATE_CONFIG.NOT_FOUND
-
-  return (
-    <div className={`state-indicator ${config.className}`}>
-      <div className="state-badge">
-        <span className="state-icon">{config.icon}</span>
-        <span className="state-label">{config.label}</span>
-      </div>
-      <div className="confidence-bar">
-        <div className="confidence-fill" style={{ width: `${(confidence * 100)}%` }}></div>
-      </div>
-      <span className="confidence-value">{(confidence * 100).toFixed(0)}% confidence</span>
-    </div>
-  )
-}
-
-function ConflictPanel({ conflicts }) {
-  return (
-    <div className="conflict-panel">
-      <h3>⚡ Conflicting Rules Detected</h3>
-      {conflicts.map((conflict, i) => (
-        <div key={i} className="conflict-item">
-          <div className="conflict-rules">
-            <div className="conflict-rule rule-a">
-              <div className="rule-header">
-                <span className="rule-label">Rule A</span>
-                <span className="rule-source">{conflict.rule_a.document}</span>
-              </div>
-              {conflict.rule_a.page && <div className="rule-meta">Page {conflict.rule_a.page}</div>}
-              <div className="rule-meta">{conflict.rule_a.section}</div>
-              <blockquote className="rule-text">"{conflict.rule_a.text}"</blockquote>
-            </div>
-
-            <div className="conflict-vs">VS</div>
-
-            <div className="conflict-rule rule-b">
-              <div className="rule-header">
-                <span className="rule-label">Rule B</span>
-                <span className="rule-source">{conflict.rule_b.document}</span>
-              </div>
-              {conflict.rule_b.page && <div className="rule-meta">Page {conflict.rule_b.page}</div>}
-              <div className="rule-meta">{conflict.rule_b.section}</div>
-              <blockquote className="rule-text">"{conflict.rule_b.text}"</blockquote>
-            </div>
-          </div>
-
-          <div className="conflict-explanation">
-            <strong>Why this conflicts:</strong> {conflict.explanation}
-          </div>
+        <div className="footer-inner">
+          <p><strong>Rulebook QnA</strong> &mdash; Evidence-grounded university regulations Q&A</p>
+          <p className="footer-sub">Every answer is traceable. When evidence is insufficient, we say so. When rules conflict, we show both sides.</p>
         </div>
-      ))}
-    </div>
-  )
-}
-
-function EvidencePanel({ evidence }) {
-  return (
-    <div className="evidence-panel">
-      <h3>📄 Supporting Evidence</h3>
-      <div className="evidence-list">
-        {evidence.map((ev, i) => (
-          <div key={i} className="evidence-item">
-            <div className="evidence-header">
-              <span className="evidence-id">{ev.evidence_id}</span>
-              <span className="evidence-score">Score: {(ev.score * 100).toFixed(0)}%</span>
-            </div>
-            <div className="evidence-source">
-              <span className="source-doc">📁 {ev.document}</span>
-              {ev.page && <span className="source-page">📃 Page {ev.page}</span>}
-              <span className="source-section">§ {ev.section}</span>
-            </div>
-            <blockquote className="evidence-text">"{ev.text}"</blockquote>
-          </div>
-        ))}
-      </div>
+      </footer>
     </div>
   )
 }
